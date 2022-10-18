@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/drawable/color_one_icon.xml" value="0.1605" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/drawable/esqu_shadow_button.xml" value="0.25" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/drawable/esqu_shadow_button_off.xml" value="0.157" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/drawable/esqu_yellow_notreg.xml" value="0.3625" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/drawable/ic_wave.xml" value="0.13" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/activity_custom_scanner.xml" value="0.1" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/activity_main.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/addbenefinfo.xml" value="0.5" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/button_off_layout.xml" value="0.29379485014774165" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/camaramethodfragment.xml" value="0.33" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/camera_fragment.xml" value="0.25" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/cameramethodlocal.xml" value="0.16145833333333334" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/capdocuments.xml" value="0.25" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/custom_barcode_scanner.xml" value="0.22" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/fragment_dashboard.xml" value="0.29379485014774165" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/fragment_home.xml" value="0.29379485014774165" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/fragment_notifications.xml" value="0.19322916666666667" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/imagesbenef.xml" value="0.1" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/imageslocalitem.xml" value="0.17552083333333332" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/infohelperqr.xml" value="0.3614583333333333" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/local_database_items.xml" value="0.17552083333333332" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/login.xml" value="0.22" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/statusbeneficio.xml" value="0.26458333333333334" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/statusbeneficioon.xml" value="0.33" />
+        <entry key="..\:/Users/usuario1/AndroidStudioProjects/JovEnMovimiento2022/app/src/main/res/layout/testingqrcurp.xml" value="0.22" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

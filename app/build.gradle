@@ -1,0 +1,96 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.example.jovenmovimiento2022"
+        minSdk 26
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        viewBinding true
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/NOTICE'
+    }
+
+}
+
+dependencies {
+
+    implementation 'com.journeyapps:zxing-android-embedded:3.5.0'
+
+
+    implementation 'org.objenesis:objenesis:3.2'
+    implementation 'org.jacoco:org.jacoco.ant:0.8.7'
+    implementation 'me.dm7.barcodescanner:zxing:1.9'
+
+    //noinspection
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.5.1'
+    implementation 'androidx.navigation:navigation-fragment:2.6.0-alpha02'
+    implementation 'androidx.navigation:navigation-ui:2.6.0-alpha02'
+    implementation 'com.google.android.material:material:1.6.1'
+
+
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.intuit.sdp:sdp-android:1.0.5'
+    //Animations
+    implementation "com.airbnb.android:lottie:5.2.0"
+    //Necessary libraries
+    //noinspection
+    implementation files('libs\\axiom-api-1.2.13.jar')
+    implementation files('libs\\axiom-impl-1.2.13.jar')
+    implementation files('libs\\axis2-adb-1.6.2.jar')
+    implementation files('libs\\commons-codec-1.3.jar')
+    implementation files('libs\\commons-httpclient-3.1.jar')
+    implementation files('libs\\commons-logging-1.1.1.jar')
+    implementation files('libs\\dom4j-1.6.1.jar')
+    implementation files('libs\\mail-1.4.jar')
+    implementation files('libs\\neethi-3.0.2.jar')
+    implementation files('libs\\wsdl4j-1.6.2.jar')
+    implementation files('libs\\XmlSchema-1.4.7.jar')
+    implementation files('libs\\axis2-kernel-1.6.2.jar')
+    implementation files('libs\\rt.jar')
+    implementation files('libs\\axis2-transport-http-1.6.2.jar')
+    implementation files('libs\\axis2-transport-local-1.6.2.jar')
+    implementation 'com.google.android.gms:play-services-basement:17.6.0'
+    implementation files('libs\\httpasyncclient-4.1.5.jar')
+    implementation files('libs\\httpclient-4.5.13.jar')
+    implementation files('libs\\httpcore-4.4.15.jar')
+    implementation files('libs\\jsoup-1.15.3.jar')
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+
+    //noinspection GradleCompatible
+    implementation 'com.android.support:support-core-utils:28.0.0'
+
+}

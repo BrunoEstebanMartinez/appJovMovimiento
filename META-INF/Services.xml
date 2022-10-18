@@ -1,0 +1,24 @@
+
+<service name="AppJovEnMovimientoService" scope="application" targetNamespace="http://services.wserv.ecurp.dgti.segob.gob.mx">
+<description>
+    AppJovEnMovimientoService: Prueba de llamada
+</description>
+    <parameter name="ServiceClass">com.example.jovenmovimiento2022.Models.DatosConsultaCurp</parameter>
+<messageReceivers>
+    <operation name = "setTipoTransaccion">
+        <messageReceiver class="org.apache.axis2.rpc.receivers.RawXMLINOutMessageReceiver" />
+        <actionMapping>urn:setTipoTransaccion</actionMapping>
+    </operation>
+    <operation name = "setUsurio">
+        <messageReceiver class="org.apache.axis2.rpc.receivers.RawXMLINOutMessageReceiver" />
+        <actionMapping>urn:setUsuario</actionMapping>
+    </operation>
+    <operation name = "setPassword">
+        <messageReceiver class="org.apache.axis2.rpc.receivers.RawXMLINOutMessageReceiver" />
+        <actionMapping>urn:setPassword</actionMapping>
+    </operation>
+</messageReceivers>
+<schema schemaNamespace="http://services.wserv.ecurp.dgti.segob.gob.mx"/>
+</service>
+
+
