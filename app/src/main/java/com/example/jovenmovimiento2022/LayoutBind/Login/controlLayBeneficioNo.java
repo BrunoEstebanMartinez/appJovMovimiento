@@ -2,9 +2,12 @@ package com.example.jovenmovimiento2022.LayoutBind.Login;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,11 +46,12 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
     public Button principal_qr;
     protected String stateResponse;
     //retrive the session user
-    protected String SessionC, SessionF, SessionServeJson;
+    protected String SessionC, SessionF, SessionServeJson, SessionLocal;
     protected TextView SessionCurp;
     protected TextView SessionLeyen;
 
     protected String URL = "http://187.216.191.87:8060/api/altaPersonSession";
+    protected String URLrg = "http://187.216.191.87:8060/api/altaRegPerson";
     protected String Identity = "POST";
     protected String valuated = "non";
     protected String valueIsSucces = "is";
@@ -55,52 +59,89 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
     protected String leyendaIsNotAccess = "No eres beneficiario";
     protected String leyendaBConsul = "Consultar";
     protected String leyendaCurpQR = "Estas dado de alta. Solo podrás consultar tus datos";
-
-
+    protected String leyendaIsInServer = "Tu registro fue exitoso. Puedes desinstalar o cerrar la aplicación.";
+    protected String leyendaisLocal = "Tu registro se guardará localmente. Captura el código QR impreso o digitalizado en tu documento";
+    protected String leyendaisLocalReg = "Sesión local. Solo podrás consultar tus datos";
+    protected boolean isConnected;
+    protected static Context context;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onSetScreen();
         viewNavintent();
 
+        controlLayBeneficioNo.context = getApplicationContext();
         dbOpenHelper = new DBOpenHelper(this);
 
         SessionCurp = findViewById(R.id.getCurp);
         //SessionLeyen = findViewById(R.id.leyenda);
 
         Bundle Session = this.getIntent().getExtras();
+
         SessionC = Session.getString("CurpSendSession");
         SessionF = Session.getString("CurpSendSessionF");
+        SessionLocal = Session.getString("CurpSendLocal");
         SessionServeJson = Session.getString("CurpSendSessionCurp");
+
 
         //Revision
 
-        if(SessionC.equals(valuated)){
-            ConstraintLayout backColorifBenef = (ConstraintLayout)findViewById(R.id.benefic);
-            backColorifBenef.setBackgroundResource(R.drawable.esqu_yellow_notreg);
-            TextView leyendaAccess = (TextView)findViewById(R.id.Bne);
-            leyendaAccess.setText(leyendaIsNotAccess);
-        }else if(SessionC.equals(valueIsSucces)){
-            ConstraintLayout backColorifBenef = (ConstraintLayout)findViewById(R.id.benefic);
-            backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
-            SessionCurp.setText(SessionServeJson);
-            TextView leyendaAccess = (TextView)findViewById(R.id.Bne);
-            TextView leyendaAccessQR = (TextView)findViewById(R.id.leyenda);
-            leyendaAccess.setText(leyendaIsAccess);
-            leyendaAccessQR.setText(leyendaCurpQR);
-            Button leyendaisConsulta = (Button)findViewById(R.id.cargarFotos);
-            leyendaisConsulta.setText(leyendaBConsul);
-            alertedisNull.alertisNull("Estatus: Sesión", "Datos completados", false, "Continuar", true);
+        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+        Cursor getIfNotCache = dbOpenHelper.retriveNumberOfSession(database);
+        getIfNotCache.moveToFirst();
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
+
+        if(isConnected){
+            if (SessionC.equals(valuated)) {
+                ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
+                backColorifBenef.setBackgroundResource(R.drawable.esqu_yellow_notreg);
+                TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                leyendaAccess.setText(leyendaIsNotAccess);
+            }else{
+                if (getIfNotCache.getCount() <= 0) {
+                    ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
+                    backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
+                    SessionCurp.setText(SessionServeJson);
+                    TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                    TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
+                    leyendaAccess.setText(leyendaIsAccess);
+                    leyendaAccessQR.setText(leyendaIsInServer);
+                    Button leyendaisBlocked = (Button) findViewById(R.id.cargarFotos);
+                    leyendaisBlocked.setEnabled(false);
+                } else {
+                    ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
+                    backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
+                    SessionCurp.setText(SessionServeJson);
+                    TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                    TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
+                    leyendaAccess.setText(leyendaIsAccess);
+                    leyendaAccessQR.setText(leyendaCurpQR);
+                    Button leyendaisConsulta = (Button) findViewById(R.id.cargarFotos);
+                    leyendaisConsulta.setText(leyendaBConsul);
+                    alertedisNull.alertisNull("Estatus: Sesión", "Datos completados", false, "Continuar", true);
+                }
+            }
         }else{
-            ConstraintLayout backColorifBenef = (ConstraintLayout)findViewById(R.id.benefic);
-            backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
-            SessionCurp.setText(SessionC);
-            TextView leyendaAccess = (TextView)findViewById(R.id.Bne);
-            leyendaAccess.setText(leyendaIsAccess);
+            if (SessionC.equals(SessionF)) {
+                ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
+                backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
+                SessionCurp.setText(SessionC);
+                TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                TextView leyendaAccessQr = (TextView) findViewById(R.id.leyenda);
+                leyendaAccess.setText(leyendaIsAccess);
+                if (getIfNotCache.getCount() <= 0) {
+                    leyendaAccessQr.setText(leyendaisLocal);
+                } else {
+                    leyendaAccessQr.setText(leyendaisLocalReg);
+                    Button consulta = (Button) findViewById(R.id.cargarFotos);
+                    consulta.setText(leyendaBConsul);
+                }
+            }
         }
-
-
-
     }
+
 
     public void onSetScreen() {
         setContentView(R.layout.statusbeneficio);
@@ -132,7 +173,7 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
         protected void onPreExecute() {
             super.onPreExecute();
             dialogoUp = new ProgressDialog(controlLayBeneficioNo.this);
-            dialogoUp.setMessage("Creando PIN ...");
+            dialogoUp.setMessage("Creando usuario...");
             dialogoUp.setIndeterminate(false);
             dialogoUp.setCancelable(false);
             dialogoUp.show();
@@ -144,9 +185,10 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
                 int max = 6000;
                 int min = 1;
                 int PIN = new Random().nextInt((max - min) + 1) + min;
-                regSessionPerson(stateResponse, PIN);
-                regSessionLocal(stateResponse, PIN);
+                regSessionPerson(SessionF, PIN);
+                regSessionLocal(SessionF, PIN);
                 POST(URL, Identity);
+                POSTREGBENEF(URLrg, Identity);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -183,6 +225,19 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
 
             Log.d("Test de respuesta...", json.toString());
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void POSTREGBENEF(String URL, String Identity){
+        List<NameValuePair> params = new ArrayList<>();
+        try {
+            params.add(new BasicNameValuePair("curp_per", SessionF));
+            params.add(new BasicNameValuePair("stat_benef", Integer.toString(1)));
+            params.add(new BasicNameValuePair("stat_exist", Integer.toString(1)));
+            JSONObject json = methods.Requested(URL, Identity, params);
+            Log.d("Test de respuesta...", json.toString());
         }catch (Exception e){
             e.printStackTrace();
         }

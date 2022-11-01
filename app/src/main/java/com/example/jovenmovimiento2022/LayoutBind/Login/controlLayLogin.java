@@ -118,7 +118,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
 
        if(ifSessionCount.getCount() <= 0){
             alertedisNull.alertisNull("Status: PIN", "Al iniciar tu registro la aplicación te asignará un PIN de inicio. Asegurate de guardarlo para cualquier aclaración", false, "Continuar", true);
-        }else{
+        }else if(ifSessionCount.getCount() >= 1){
            IntStatusTask.postDelayed(taskActivityNetwork, 0);
        }
         ifSessionCount.close();
@@ -191,8 +191,16 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
             NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
             isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
             if (!isConnected) {
-                alertedisNull.alertisNull("Estatus: Sin conexión", "Sus datos se guardarán localmente. Conectate a una red para registrarte correctamente.", false, "Continuar", true);
-            } else {
+                SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+                Cursor onlyReceiveMessage = dbOpenHelper.retriveNumberOfSession(database);
+                onlyReceiveMessage.moveToFirst();
+                if(onlyReceiveMessage.getCount() <=0){
+                    alertedisNull.alertisNull("Estatus: Sin conexión", "Sus datos se guardarán localmente. Conectate a una red para registrarte correctamente.", false, "Continuar", true);
+                }else{
+                    alertedisNull.alertisNull("Estatus: Sin conexión", "Conectate a una red para saber si eres beneficiario o no.", false, "Continuar", true);
+                }
+                        } else {
+
                     new LOCALSTORAGE().execute();
             }
             IntStatusTask.postDelayed(this, 20000);
@@ -230,6 +238,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 public void run() {
                     Login.setEnabled(false);
                     alertedisNull.alertisNull("Estatus", "Reinicia la aplicación. Código de inicio: " + selfPin + Curp_s, false, "Continuar", true);
+                    IntStatusTask.removeCallbacks(taskActivityNetwork);
                 }
             }, 20000);
 
@@ -273,8 +282,16 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 alertedisNull.alertisNull("Algo salió mal", "El resultado no fue el esperado. Solo código de barras", false, "Continuar", true);
             } else {
                 //Revision
-                stateResponse = result.getContents();
-                new LOGIN().execute();
+                ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+                isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
+                if(!isConnected){
+                    stateResponse = result.getContents();
+                    new LOCALSTORE().execute();
+                }else{
+                    stateResponse = result.getContents();
+                    new LOGIN().execute();
+                }
                 //
             }
         } else {
@@ -317,7 +334,8 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 if (sessions.getCount() <= 0 || Info.getCount() <= 0 || images.getCount() <= 0) {
                     new LOCALSTORAGE().cancel(true);
                     dialogoUp.dismiss();
-                } else {
+                }
+                else {
                     try {
                         onPOSTIfNotInfoPerson(URLIn, IdentityAux);
                     } catch (Exception e) {
@@ -362,7 +380,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         protected void onPreExecute() {
             super.onPreExecute();
             dialogoUp = new ProgressDialog(controlLayLogin.this);
-            dialogoUp.setMessage("Iniciando");
+            dialogoUp.setMessage("Iniciando...");
             dialogoUp.setIndeterminate(false);
             dialogoUp.setCancelable(false);
             dialogoUp.show();
@@ -383,31 +401,52 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             dialogoUp.dismiss();
-            if(sessionAccount.equals(SessionPIN)){
+            // try null reference response
+
+            if(SessionPIN.equals(sessionAccount)){
+                SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+                Cursor ifInfo = dbOpenHelper.retriveNumberOfSession(database);
+                ifInfo.moveToFirst();
+                if(ifInfo.getCount() <= 0){
+                    Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
+                    Bundle bundle = new Bundle();
+                    //Create a Key for local session
+                    bundle.putString("CurpSendSession", SessionPIN);
+                    bundle.putString("CurpSendSessionF", stateResponse);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
+                }else{
+                    alertedisNull.alertisNull("Status: Error", "Error: 0003 Contacta al administrador", false, "Continuar", true);
+                    Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
+                    Bundle bundle = new Bundle();
+                    //Create a Key for local session
+                    bundle.putString("CurpSendSession", SessionPIN);
+                    bundle.putString("CurpSendSessionF", stateResponse);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            }
+
+            if(SessionPIN.equals(sessionAccountSuccess)){
                 Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
                 Bundle bundle = new Bundle();
                 //Create a Key for local session
-                bundle.putString("CurpSendSession", sessionAccount);
+                bundle.putString("CurpSendSession", SessionPIN);
                 bundle.putString("CurpSendSessionF", stateResponse);
                 intent.putExtras(bundle);
                 startActivity(intent);
-            }else{
-                alertedisNull.alertisNull("Status: Error", "Error: 0003 Contacta al administrador", false, "Continuar", true);
-                Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
-                Bundle bundle = new Bundle();
-                //Create a Key for local session
-                bundle.putString("CurpSendSession", stateResponse);
-                intent.putExtras(bundle);
-                startActivity(intent);
             }
-            alertedisNull.alertisNull("Status: Datos", "Sesion local", false, "Continuar", true);
+
             Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
             Bundle bundle = new Bundle();
             //Create a Key for local session
             bundle.putString("CurpSendSession", stateResponse);
+            bundle.putString("CurpSendSessionF", stateResponse);
             intent.putExtras(bundle);
             startActivity(intent);
             IntStatusTask.removeCallbacks(taskActivityNetwork);
+
         }
     }
 
@@ -418,7 +457,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         protected void onPreExecute() {
             super.onPreExecute();
             dialogoUp = new ProgressDialog(controlLayLogin.this);
-            dialogoUp.setMessage("Iniciando");
+            dialogoUp.setMessage("Iniciando sesión ...");
             dialogoUp.setIndeterminate(false);
             dialogoUp.setCancelable(false);
             dialogoUp.show();
@@ -445,12 +484,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 if(getIfNotCache.getCount() <= 0){
                     Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
                     startActivity(intent);
-                    try {
-                        Thread.sleep(50000);
-                        alertedisNull.alertisNull("Status: Datos", "0011: Ya eres beneficiario. Cierra o desinstala la app si hiciste tu registro", false, null, true);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    alertedisNull.alertisNull("Status: Datos", "0011: Ya eres beneficiario. Cierra o desinstala la app si hiciste tu registro", false, null, true);
                            }
             }else{
                 Intent intent = new Intent(controlLayLogin.this, QreadLayHelper.class);
@@ -472,10 +506,71 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
-            IntStatusTask.removeCallbacks(taskActivityNetwork);
 
+            Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("CurpSendSession", Curp_s);
+            bundle.putString("CurpSendSessionF", Curp_s);
+            intent.putExtras(bundle);
+            startActivity(intent);
+
+            IntStatusTask.removeCallbacks(taskActivityNetwork);
         }
     }
+
+
+        public class LOCALSTORE extends AsyncTask<String, String, String>{
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
+                Bundle bundle = new Bundle();
+                //Create a Key for local session
+                bundle.putString("CurpSendSession", stateResponse);
+                bundle.putString("CurpSendSessionF", stateResponse);
+                intent.putExtras(bundle);
+                Button isMessage = (Button) findViewById(R.id.cargarFotos);
+                isMessage.setEnabled(true);
+                isMessage.setText("");
+                startActivity(intent);
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                dialogoUp = new ProgressDialog(controlLayLogin.this);
+                dialogoUp.setMessage("Iniciando localmente ...");
+                dialogoUp.setIndeterminate(false);
+                dialogoUp.setCancelable(false);
+                dialogoUp.show();
+            }
+
+            @Override
+            protected String doInBackground(String... strings) {
+                SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+                Cursor ifLocal = dbOpenHelper.retriveNumberOfSession(database);
+                ifLocal.moveToFirst();
+                if(ifLocal.getCount() >=1){
+                    new LOCALSTORE().cancel(true);
+                    dialogoUp.dismiss();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                dialogoUp.dismiss();
+                Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
+                Bundle bundle = new Bundle();
+                //Create a Key for local session
+                bundle.putString("CurpSendSession", stateResponse);
+                bundle.putString("CurpSendSessionF", stateResponse);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        }
 
 
     public void onPOSTIfNotInfoPerson(String URL, String Identity) throws Exception {
