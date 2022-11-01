@@ -3,7 +3,7 @@ package com.example.jovenmovimiento2022.Models;
 /*
    *  File:     DatosConsultaCurp.java
    *  Function: Testing de WsCurp
-   *  Autor:    Ing. Bruno Esteban Martínez Millán
+   *  Autores:    Ing. Bruno Esteban Martínez Millán e Ing. Silverio Baltazar Barrientos Zarate.
    *  Copyright 2022 Gobierno del Estado de México
    *
    *

@@ -54,7 +54,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
 
-        android:id="@+id/constraintLayout"
+        android:id="@+id/benefic"
         android:layout_width="0dp"
         android:layout_height="110dp"
         android:layout_marginStart="42dp"
@@ -99,10 +99,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/leyenda" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/leyenda"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="42dp"
@@ -128,11 +128,11 @@
         android:layout_marginTop="22dp"
         android:layout_marginEnd="74dp"
         android:layout_marginBottom="13dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView3"
+        app:layout_constraintBottom_toTopOf="@+id/leyenda"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        app:layout_constraintTop_toBottomOf="@+id/benefic"
         app:lottie_autoPlay="true"
         app:lottie_fileName="109280-mobile-phone.json"
         app:lottie_loop="true" />

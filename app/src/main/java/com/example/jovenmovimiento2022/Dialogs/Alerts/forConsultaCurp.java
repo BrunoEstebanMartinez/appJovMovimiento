@@ -1,3 +1,14 @@
+/*
+ *  File:     forConsultaCurp.java
+ *  Function: Parent class of dialogs in all app
+ *  Autores:  Ing. Bruno Esteban Martínez Millán e Ing. Silverio Baltazar Barrientos Zarate.
+ *  Copyright 2022 Gobierno del Estado de México
+ *
+ *
+ */
+
+
+
 package com.example.jovenmovimiento2022.Dialogs.Alerts;
 
 // Android dependencies

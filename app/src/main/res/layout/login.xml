@@ -18,7 +18,7 @@
         android:background="@drawable/esqu_shadow_button"
         android:text="Ingresar"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView5"
+        app:layout_constraintBottom_toTopOf="@+id/bio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/PINED" />
@@ -62,7 +62,6 @@
         android:layout_marginStart="96dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="97dp"
-        android:text="PIN"
         android:textAlignment="center"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +69,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/bio"
         android:layout_width="0dp"
         android:layout_height="34dp"
         android:layout_marginStart="78dp"
@@ -82,6 +81,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/benef_fu_i_tested"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="366dp"
+        tools:layout_editor_absoluteY="710dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

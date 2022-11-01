@@ -1,3 +1,12 @@
+/*
+ *  File:     Estructure_person.java
+ *  Function: Model table JOVMOVI_BENEF in local storage database
+ *  Autores:  Ing. Bruno Esteban Martínez Millán e Ing. Silverio Baltazar Barrientos Zarate.
+ *  Copyright 2022 Gobierno del Estado de México
+ */
+
+
+
 package com.example.jovenmovimiento2022.DataBaseLocalStorage;
 
 public class Estructure_person {

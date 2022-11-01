@@ -1,7 +1,9 @@
 package com.example.jovenmovimiento2022.LayoutBind.Login;
 
+
 import com.example.jovenmovimiento2022.DataBaseLocalStorage.Estructure_Session;
 import com.example.jovenmovimiento2022.DataBaseLocalStorage.Estructure_person;
+import com.example.jovenmovimiento2022.DataBaseLocalStorage.Estructure_personLocal;
 import com.example.jovenmovimiento2022.customscann.CustomScannerActivity;
 import com.example.jovenmovimiento2022.interfaces.methodServer;
 import com.example.jovenmovimiento2022.Controllers.methodsOn;
@@ -43,10 +45,12 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
     private static final String URL = "http://187.216.191.87:8060/api/altaPersonBen";
     private static final String Identity = "POST";
 
+
     DBOpenHelper dbOpenHelper;
+    SQLiteDatabase database;
     private ProgressDialog dialogoUp;
     TextView nombre, Curp, Genero, fecha, Paises, Noest, ApellP, ApellM;
-    ConstraintLayout Benef;
+    Button consulImage;
     forConsultaCurp alertedisNull = new forConsultaCurp(this);
     String stateResponse, curpPerson, apellidoP, apellidoM, nombrePerson, generoPerson, fechaBirPerson, paisPerson, noEstPerson;
     DatosConsultaCurp person = new DatosConsultaCurp();
@@ -67,18 +71,7 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
         Paises = findViewById(R.id.paisPerson);
         Noest = findViewById(R.id.NoEst);
         //
-        Benef = findViewById(R.id.beneficio);
-        //
-        SQLiteDatabase database2 = dbOpenHelper.getReadableDatabase();
-        Cursor lastPinSession = dbOpenHelper.retriveNumberOfSession(database2);
-
-        if(lastPinSession.getCount() > 1){
-            while(lastPinSession.moveToFirst()){
-                lastPinSession.getString(lastPinSession.getColumnIndexOrThrow(Estructure_person.CURP_PER));
-            }
-            lastPinSession.close();
-        }
-
+        consulImage = findViewById(R.id.consulImages);
     }
 
     @Override
@@ -89,7 +82,6 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                 alertedisNull.alertisNull("Algo salió mal", "El resultado no fue el esperado", false, "Continuar", true);
             }
             else{
-
                 stateResponse = result.getContents();
                 String [] args = stateResponse.split("\\|");
                  curpPerson = args[0];
@@ -110,7 +102,6 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                 fecha.setText(fechaBirPerson);
                 Noest.setText(noEstPerson);
 
-
                 person.setNombres(nombrePerson);
                 person.setApellido1(apellidoP);
                 person.setApellido2(apellidoM);
@@ -129,9 +120,6 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
-
-
-
 
     @Override
     public void POST(String URL, String Identity) throws Exception {
@@ -178,8 +166,6 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
     }
 
 
-
-
     public class newPerson extends  AsyncTask<String, String, String>{
 
         @Override
@@ -196,18 +182,22 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                dataPersonLocal(person.getCveCurp(),
-                        person.getApellido1(),
-                        person.getApellido2(),
-                        person.getNombres(),
-                        person.getSexo(),
-                        person.getFechNac(),
-                        person.getNacionalidad(),
-                        "1",
-                        "1",
-                        person.getCveEntidadNac()
-                        );
-                POST(URL, Identity);
+                //Only for validations in context aplicaction (Duplicate code -> in class)
+                SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+                Cursor navigateSessionApp = dbOpenHelper.retriveSessionsLocal(database);
+                navigateSessionApp.moveToFirst();
+                    dataPersonLocal(person.getCveCurp(),
+                            person.getApellido1(),
+                            person.getApellido2(),
+                            person.getNombres(),
+                            person.getSexo(),
+                            person.getFechNac(),
+                            person.getNacionalidad(),
+                            "1",
+                            "1",
+                            person.getCveEntidadNac()
+                    );
+                    POST(URL, Identity);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -218,20 +208,23 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             dialogoUp.dismiss();
-            alertedisNull.alertisNull("Registro exitoso", "Confirma tus datos para guardar localmente pulsando el recuadro verde 'Beneficiario'. ", false, "Continuar", true);
-                    Intent intent = new Intent(QreadLayHelper.this, benefiInfo.class);
+            alertedisNull.alertisNull("Estatus: Registro", "Navegando ...", false, "Continuar", true);
+            Intent intent = new Intent(QreadLayHelper.this, benefiInfo.class);
             //Create a Key for local session
-                Bundle Session = new Bundle();
-                Session.putString("CurpSendSession", curpPerson);
-                intent.putExtras(Session);
-                startActivity(intent);
+            Bundle Session = new Bundle();
+            Session.putString("CurpSendSession", curpPerson);
+            intent.putExtras(Session);
+            startActivity(intent);
+            consulImage.setEnabled(false);
         }
     }
 
     public void onSetScreen() {
         setContentView(R.layout.statusbeneficioon);
-        SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+        database = dbOpenHelper.getReadableDatabase();
         Cursor ifSomething = dbOpenHelper.retriveAllinfoPerson(database);
+        Cursor ifSessionServer = dbOpenHelper.retriveNumberOfSession(database);
+        ifSessionServer.moveToFirst();
         ifSomething.moveToFirst();
         if(ifSomething.getCount() <= 0){
             //Initialize ZXING Library
@@ -243,29 +236,36 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
             integrator.initiateScan();
             findViewById(R.id.CerrarSession).setEnabled(false);
         }else{
-            TextView nombre, Curp, Genero, fecha, Paises, Noest, ApellP, ApellM;
-            findViewById(R.id.CerrarSession).setEnabled(true);
-            SQLiteDatabase person = dbOpenHelper.getReadableDatabase();
-            Cursor Info = dbOpenHelper.retriveAllinfoPerson(person);
-            nombre = findViewById(R.id.Nombre);
-            ApellP = findViewById(R.id.apellP);
-            ApellM = findViewById(R.id.apellM);
-            Curp = findViewById(R.id.CURP);
-            Genero = findViewById(R.id.Genero);
-            fecha = findViewById(R.id.FechaNac);
-            Paises = findViewById(R.id.paisPerson);
-            Noest = findViewById(R.id.NoEst);
-            while(Info.moveToNext()){
-                nombre.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.NOMBRES_PER)));
-                ApellP.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.PATERNO_A)));
-                ApellM.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.MATERNO_A)));
-                Curp.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.CURP_PER)));
-                Paises.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.STAT_NAC)));
-                Genero.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.GENERO_PER)));
-                fecha.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.FECHANA_PER)));
-                Noest.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.STAT_NONAC)));
-            }
-            ifSomething.close();
+                if(ifSessionServer.getCount() >= 1){
+                    findViewById(R.id.CerrarSession).setEnabled(true);
+                    TextView nombre, Curp, Genero, fecha, Paises, Noest, ApellP, ApellM;
+                    findViewById(R.id.CerrarSession).setEnabled(true);
+                    SQLiteDatabase person = dbOpenHelper.getReadableDatabase();
+                    Cursor Info = dbOpenHelper.retriveAllinfoPerson(person);
+                    nombre = findViewById(R.id.Nombre);
+                    ApellP = findViewById(R.id.apellP);
+                    ApellM = findViewById(R.id.apellM);
+                    Curp = findViewById(R.id.CURP);
+                    Genero = findViewById(R.id.Genero);
+                    fecha = findViewById(R.id.FechaNac);
+                    Paises = findViewById(R.id.paisPerson);
+                    Noest = findViewById(R.id.NoEst);
+
+                    while(Info.moveToNext()){
+                        nombre.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.NOMBRES_PER)));
+                        ApellP.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.PATERNO_A)));
+                        ApellM.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.MATERNO_A)));
+                        Curp.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.CURP_PER)));
+                        Paises.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.STAT_NAC)));
+                        Genero.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.GENERO_PER)));
+                        fecha.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.FECHANA_PER)));
+                        Noest.setText(ifSomething.getString(ifSomething.getColumnIndexOrThrow(Estructure_person.STAT_NONAC)));
+                    }
+                    ifSomething.close();
+
+                }
+                }
+
 
             findViewById(R.id.CerrarSession).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -278,10 +278,18 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                 }
             });
 
-
+            findViewById(R.id.consulImages).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(QreadLayHelper.this, benefiInfo.class);
+                    //Create a Key for local session
+                    Bundle Session = new Bundle();
+                    Session.putString("CurpSendSession", curpPerson);
+                    intent.putExtras(Session);
+                    startActivity(intent);
+                }
+            });
         }
-
-    }
 
 
     public void dataPersonLocal(String curp_per,
@@ -298,8 +306,6 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
         dbOpenHelper.inFetchDataLocal(curp_per, apell_p, apell_m, nombres, genero, fecha_nac, nac, benef, exte, nonac, database);
         dbOpenHelper.close();
     }
-
-
 
     public Button viewComponents(Button Component, int idreference) {
         return findViewById(idreference);

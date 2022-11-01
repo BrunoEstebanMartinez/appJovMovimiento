@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 
 import com.example.jovenmovimiento2022.Dialogs.Alerts.forConsultaCurp;
 import com.example.jovenmovimiento2022.customscann.CustomScannerActivity;

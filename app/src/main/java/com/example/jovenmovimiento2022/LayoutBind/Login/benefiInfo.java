@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -22,10 +23,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.jovenmovimiento2022.DataBaseLocalStorage.DBOpenHelper;
 import com.example.jovenmovimiento2022.DataBaseLocalStorage.Estructure_personImages;
 import com.example.jovenmovimiento2022.Controllers.methodsOn;
+import com.example.jovenmovimiento2022.DataBaseLocalStorage.Estructure_personImagesLocal;
 import com.example.jovenmovimiento2022.Dialogs.Alerts.forConsultaCurp;
 import com.example.jovenmovimiento2022.interfaces.methodServer;
 import com.example.jovenmovimiento2022.R;
@@ -69,7 +72,6 @@ public class benefiInfo extends Activity implements navigate, methodServer{
     //Databases variables
     Estructure_personImages TablePersons;
     DBOpenHelper dataBaseHandler;
-    private SQLiteDatabase database;
     methodsOn methods = new methodsOn();
     // Session User
     protected String SessionC;
@@ -77,7 +79,9 @@ public class benefiInfo extends Activity implements navigate, methodServer{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.camera_fragment);
+        dataBaseHandler = new DBOpenHelper(this);
 
+        onSetScreen();
         benefiInfo.context = getApplicationContext();
         Comprobante = findViewById(R.id.Comprobantede);
         CURPFOTO = findViewById(R.id.CURPView);
@@ -104,7 +108,7 @@ public class benefiInfo extends Activity implements navigate, methodServer{
             @Override
             public void onClick(View v) {
                 if(Comprobante.getDrawable() == null || CURPFOTO.getDrawable() == null || ACTAFOTO.getDrawable() == null || IDENADFOTO.getDrawable() == null|| IDENREVFOTO.getDrawable() == null|| FURFOTO.getDrawable() == null){
-                    alertedisNull.alertisNull("Error", "Tus fotos deben ser integras.", false, "Continuar", true);
+                    alertedisNull.alertisNull("Estatus: Incompleto", "Tus fotos deben ser integras.", false, "Continuar", true);
                 }else{
                     new newPhotos().execute();
                 }
@@ -112,6 +116,36 @@ public class benefiInfo extends Activity implements navigate, methodServer{
             }
         });
 
+    }
+
+
+    @Override
+    public void onSetScreen() {
+        SQLiteDatabase database = dataBaseHandler.getReadableDatabase();
+        Cursor infoImages = dataBaseHandler.retriveAllinfoPersonImages(database);
+        infoImages.moveToFirst();
+        ImageView Comprobante, CURPFOTO, ACTAFOTO, IDENADFOTO, IDENREVFOTO, FURFOTO;
+
+        if(infoImages.getCount() >= 1){
+
+            Comprobante = findViewById(R.id.Comprobantede);
+            CURPFOTO = findViewById(R.id.CURPView);
+            ACTAFOTO = findViewById(R.id.ActaNacView);
+            IDENADFOTO = findViewById(R.id.IdenADView);
+            IDENREVFOTO = findViewById(R.id.IdenREView);
+            FURFOTO = findViewById(R.id.FURView);
+
+            while(infoImages.moveToNext()){
+                Comprobante.setImageBitmap(getDecodedString(infoImages.getString(infoImages.getColumnIndexOrThrow(Estructure_personImages.COMPROBANTE_ES))));
+                CURPFOTO.setImageBitmap(getDecodedString(infoImages.getString(infoImages.getColumnIndexOrThrow(Estructure_personImages.CURP_PH))));
+                ACTAFOTO.setImageBitmap(getDecodedString(infoImages.getString(infoImages.getColumnIndexOrThrow(Estructure_personImages.ACTA_NAC))));
+                IDENADFOTO.setImageBitmap(getDecodedString(infoImages.getString(infoImages.getColumnIndexOrThrow(Estructure_personImages.IDENT_INE_ADVER))));
+                IDENREVFOTO.setImageBitmap(getDecodedString(infoImages.getString(infoImages.getColumnIndexOrThrow(Estructure_personImages.IDENT_INE_REVER))));
+                FURFOTO.setImageBitmap(getDecodedString(infoImages.getString(infoImages.getColumnIndexOrThrow(Estructure_personImages.BENEF_FUR))));
+            }
+            infoImages.close();
+
+        }
     }
 
     public void cameraLog(int idRefer, int CODE) {
@@ -210,18 +244,21 @@ public class benefiInfo extends Activity implements navigate, methodServer{
 
     }
 
+    private Bitmap getDecodedString(String bitmap){
+        byte[] arr = Base64.decode(bitmap, Base64.URL_SAFE);
+
+        Bitmap img = BitmapFactory.decodeByteArray(arr, 0, arr.length);
+
+        return img;
+    }
+
 
     @Override
     public Button viewComponents(Button Component, int idreference) {
-
-
            return null;
         }
 
-    @Override
-    public void onSetScreen() {
 
-    }
 
     @Override
     public void POST(String URL, String Identity) throws Exception {
@@ -259,7 +296,7 @@ public class benefiInfo extends Activity implements navigate, methodServer{
         protected void onPreExecute() {
             super.onPreExecute();
             dialogoUp = new ProgressDialog(benefiInfo.this);
-            dialogoUp.setMessage("Procesando tus fotos");
+            dialogoUp.setMessage("Procesando...");
             dialogoUp.setIndeterminate(false);
             dialogoUp.setCancelable(false);
             dialogoUp.show();
@@ -268,7 +305,26 @@ public class benefiInfo extends Activity implements navigate, methodServer{
         @Override
         protected String doInBackground(String... strings) {
             try {
-                POST(URL, Identity);
+                SQLiteDatabase database = dataBaseHandler.getReadableDatabase();
+                Cursor currentSession = dataBaseHandler.retriveNumberOfSession(database);
+                currentSession.moveToFirst();
+                if(currentSession.getCount() <= 0){
+                   new newPhotos().cancel(true);
+                    dialogoUp.dismiss();
+                    Intent intent = new Intent(benefiInfo.this, benefiInfo.class);
+                    startActivity(intent);
+                }else{
+                    inFetchDataImages(SessionC,
+                            codexPhotoComp,
+                            codexPhotoCurp,
+                            codexPhotoActa,
+                            codexPhotoIdeAd,
+                            codexPhotoIdeRev,
+                            codexPhotoFUR);
+                    POST(URL, Identity);
+                }
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -280,13 +336,26 @@ public class benefiInfo extends Activity implements navigate, methodServer{
             dialogoUp.dismiss();
             Intent intent = new Intent(benefiInfo.this, controlLayLogin.class);
             startActivity(intent);
-            alertedisNull.alertisNull("Registro exitoso", "Tu información ha sido guardada.", false, "Continuar", true);
+
         }
     }
 
 
-public void onBackPressed(){
+    public void inFetchDataImages(String curp_per,
+                                       String comprobante_es,
+                                       String curp_phh,
+                                       String acta_nac,
+                                       String inden_ine_ad,
+                                        String inden_ine_rev,
+                                       String FUR_image){
+        SQLiteDatabase database = dataBaseHandler.getWritableDatabase();
+        dataBaseHandler.inFetchDataImages(curp_per, comprobante_es, curp_phh, acta_nac, inden_ine_ad, inden_ine_rev, FUR_image, database);
+        dataBaseHandler.close();
 
-}
+    }
+
+        public void onBackPressed(){
+
+        }
 
 }
