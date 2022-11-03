@@ -401,50 +401,18 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
             super.onPostExecute(s);
             dialogoUp.dismiss();
             // try null reference response
-
-            if(SessionPIN.equals(sessionAccount)){
                 SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
                 Cursor ifInfo = dbOpenHelper.retriveNumberOfSession(database);
                 ifInfo.moveToFirst();
-                if(ifInfo.getCount() <= 0){
-                    Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
+
+                    Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
                     Bundle bundle = new Bundle();
                     //Create a Key for local session
                     bundle.putString("CurpSendSession", SessionPIN);
                     bundle.putString("CurpSendSessionF", stateResponse);
                     intent.putExtras(bundle);
                     startActivity(intent);
-
-                }else{
-                    alertedisNull.alertisNull("Status: Error", "Error: 0003 Contacta al administrador", false, "Continuar", true);
-                    Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
-                    Bundle bundle = new Bundle();
-                    //Create a Key for local session
-                    bundle.putString("CurpSendSession", SessionPIN);
-                    bundle.putString("CurpSendSessionF", stateResponse);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                }
-            }
-
-            if(SessionPIN.equals(sessionAccountSuccess)){
-                Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
-                Bundle bundle = new Bundle();
-                //Create a Key for local session
-                bundle.putString("CurpSendSession", SessionPIN);
-                bundle.putString("CurpSendSessionF", stateResponse);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-
-            Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
-            Bundle bundle = new Bundle();
-            //Create a Key for local session
-            bundle.putString("CurpSendSession", stateResponse);
-            bundle.putString("CurpSendSessionF", stateResponse);
-            intent.putExtras(bundle);
-            startActivity(intent);
-            IntStatusTask.removeCallbacks(taskActivityNetwork);
+                    IntStatusTask.removeCallbacks(taskActivityNetwork);
 
         }
     }

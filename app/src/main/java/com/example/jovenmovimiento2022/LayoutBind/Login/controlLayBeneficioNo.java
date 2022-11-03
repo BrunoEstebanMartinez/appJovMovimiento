@@ -87,7 +87,7 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
         //Revision
 
         SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
-        Cursor getIfNotCache = dbOpenHelper.retriveNumberOfSession(database);
+        Cursor getIfNotCache = dbOpenHelper.retriveAllinfoPerson(database);
         getIfNotCache.moveToFirst();
 
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -95,37 +95,22 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
         isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
 
         if(isConnected){
-            try{
+            try {
+                ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
                 if (SessionC.equals(valuated)) {
-                    ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
                     backColorifBenef.setBackgroundResource(R.drawable.esqu_yellow_notreg);
                     TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
                     leyendaAccess.setText(leyendaIsNotAccess);
                 }else{
-                    if (getIfNotCache.getCount() <= 0) {
-                        ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
-                        backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
-                        SessionCurp.setText(SessionServeJson);
-                        TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
-                        TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
-                        leyendaAccess.setText(leyendaIsAccess);
-                        leyendaAccessQR.setText(leyendaIsInServer);
-                        Button leyendaisBlocked = (Button) findViewById(R.id.cargarFotos);
-                        leyendaisBlocked.setEnabled(false);
-                    } else {
-                        ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
-                        backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
-                        SessionCurp.setText(SessionServeJson);
-                        TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
-                        TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
-                        leyendaAccess.setText(leyendaIsAccess);
-                        leyendaAccessQR.setText(leyendaCurpQR);
-                        Button leyendaisConsulta = (Button) findViewById(R.id.cargarFotos);
-                        leyendaisConsulta.setText(leyendaBConsul);
-                        alertedisNull.alertisNull("Estatus: Sesión", "Datos completados", false, "Continuar", true);
-                    }
-                }
-
+                    backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
+                    SessionCurp.setText(SessionServeJson);
+                    TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                    TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
+                    leyendaAccess.setText(leyendaIsAccess);
+                    leyendaAccessQR.setText(leyendaCurpQR);
+                    Button leyendaisConsulta = (Button) findViewById(R.id.cargarFotos);
+                    leyendaisConsulta.setText(leyendaBConsul);
+            }
             }catch(Exception e){
                 Intent intent = new Intent(controlLayBeneficioNo.this, controlLayLogin.class);
                 startActivity(intent);
@@ -201,8 +186,13 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
                 regSessionPerson(SessionF, PIN);
                 regSessionLocal(SessionF, PIN);
                 POST(URL, Identity);
-                POSTREGBENEF(URLrg, Identity);
+
             } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try{
+                POSTREGBENEF(URLrg, Identity);
+            }catch(Exception e){
                 e.printStackTrace();
             }
             return null;
@@ -247,8 +237,6 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
         List<NameValuePair> params = new ArrayList<>();
         try {
             params.add(new BasicNameValuePair("curp_per", SessionF));
-            params.add(new BasicNameValuePair("stat_benef", Integer.toString(1)));
-            params.add(new BasicNameValuePair("stat_exist", Integer.toString(1)));
             JSONObject json = methods.Requested(URL, Identity, params);
             Log.d("Test de respuesta...", json.toString());
         }catch (Exception e){
