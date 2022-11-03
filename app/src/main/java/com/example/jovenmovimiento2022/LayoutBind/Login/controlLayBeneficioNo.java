@@ -101,7 +101,7 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
                     backColorifBenef.setBackgroundResource(R.drawable.esqu_yellow_notreg);
                     TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
                     leyendaAccess.setText(leyendaIsNotAccess);
-                }else{
+                }else if(SessionC.equals(valueIsSucces)){
                     if (getIfNotCache.getCount() <= 0) {
                         ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
                         backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
@@ -112,18 +112,18 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
                         leyendaAccessQR.setText(leyendaIsInServer);
                         Button leyendaisBlocked = (Button) findViewById(R.id.cargarFotos);
                         leyendaisBlocked.setEnabled(false);
-                    } else {
-                        ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
-                        backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
-                        SessionCurp.setText(SessionServeJson);
-                        TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
-                        TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
-                        leyendaAccess.setText(leyendaIsAccess);
-                        leyendaAccessQR.setText(leyendaCurpQR);
-                        Button leyendaisConsulta = (Button) findViewById(R.id.cargarFotos);
-                        leyendaisConsulta.setText(leyendaBConsul);
-                        alertedisNull.alertisNull("Estatus: Sesión", "Datos completados", false, "Continuar", true);
                     }
+                }else{
+                    ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
+                    backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
+                    SessionCurp.setText(SessionServeJson);
+                    TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                    TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
+                    leyendaAccess.setText(leyendaIsAccess);
+                    leyendaAccessQR.setText(leyendaCurpQR);
+                    Button leyendaisConsulta = (Button) findViewById(R.id.cargarFotos);
+                    leyendaisConsulta.setText(leyendaBConsul);
+                    alertedisNull.alertisNull("Estatus: Sesión", "Datos completados", false, "Continuar", true);
                 }
 
             }catch(Exception e){
@@ -201,8 +201,14 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
                 regSessionPerson(SessionF, PIN);
                 regSessionLocal(SessionF, PIN);
                 POST(URL, Identity);
-                POSTREGBENEF(URLrg, Identity);
+
             } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+            try{
+                POSTREGBENEF(URLrg, Identity);
+            }catch (Exception e){
                 e.printStackTrace();
             }
             return null;
@@ -247,8 +253,6 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
         List<NameValuePair> params = new ArrayList<>();
         try {
             params.add(new BasicNameValuePair("curp_per", SessionF));
-            params.add(new BasicNameValuePair("stat_benef", Integer.toString(1)));
-            params.add(new BasicNameValuePair("stat_exist", Integer.toString(1)));
             JSONObject json = methods.Requested(URL, Identity, params);
             Log.d("Test de respuesta...", json.toString());
         }catch (Exception e){
