@@ -64,6 +64,7 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
     protected String leyendaisLocalReg = "Sesión local. Solo podrás consultar tus datos";
     protected boolean isConnected;
     protected static Context context;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onSetScreen();
@@ -94,51 +95,63 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
         isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
 
         if(isConnected){
-            if (SessionC.equals(valuated)) {
-                ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
-                backColorifBenef.setBackgroundResource(R.drawable.esqu_yellow_notreg);
-                TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
-                leyendaAccess.setText(leyendaIsNotAccess);
-            }else{
-                if (getIfNotCache.getCount() <= 0) {
+            try{
+                if (SessionC.equals(valuated)) {
                     ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
-                    backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
-                    SessionCurp.setText(SessionServeJson);
+                    backColorifBenef.setBackgroundResource(R.drawable.esqu_yellow_notreg);
                     TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
-                    TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
-                    leyendaAccess.setText(leyendaIsAccess);
-                    leyendaAccessQR.setText(leyendaIsInServer);
-                    Button leyendaisBlocked = (Button) findViewById(R.id.cargarFotos);
-                    leyendaisBlocked.setEnabled(false);
-                } else {
-                    ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
-                    backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
-                    SessionCurp.setText(SessionServeJson);
-                    TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
-                    TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
-                    leyendaAccess.setText(leyendaIsAccess);
-                    leyendaAccessQR.setText(leyendaCurpQR);
-                    Button leyendaisConsulta = (Button) findViewById(R.id.cargarFotos);
-                    leyendaisConsulta.setText(leyendaBConsul);
-                    alertedisNull.alertisNull("Estatus: Sesión", "Datos completados", false, "Continuar", true);
+                    leyendaAccess.setText(leyendaIsNotAccess);
+                }else{
+                    if (getIfNotCache.getCount() <= 0) {
+                        ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
+                        backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
+                        SessionCurp.setText(SessionServeJson);
+                        TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                        TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
+                        leyendaAccess.setText(leyendaIsAccess);
+                        leyendaAccessQR.setText(leyendaIsInServer);
+                        Button leyendaisBlocked = (Button) findViewById(R.id.cargarFotos);
+                        leyendaisBlocked.setEnabled(false);
+                    } else {
+                        ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
+                        backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
+                        SessionCurp.setText(SessionServeJson);
+                        TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                        TextView leyendaAccessQR = (TextView) findViewById(R.id.leyenda);
+                        leyendaAccess.setText(leyendaIsAccess);
+                        leyendaAccessQR.setText(leyendaCurpQR);
+                        Button leyendaisConsulta = (Button) findViewById(R.id.cargarFotos);
+                        leyendaisConsulta.setText(leyendaBConsul);
+                        alertedisNull.alertisNull("Estatus: Sesión", "Datos completados", false, "Continuar", true);
+                    }
                 }
+
+            }catch(Exception e){
+                Intent intent = new Intent(controlLayBeneficioNo.this, controlLayLogin.class);
+                startActivity(intent);
             }
         }else{
-            if (SessionC.equals(SessionF)) {
-                ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
-                backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
-                SessionCurp.setText(SessionC);
-                TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
-                TextView leyendaAccessQr = (TextView) findViewById(R.id.leyenda);
-                leyendaAccess.setText(leyendaIsAccess);
-                if (getIfNotCache.getCount() <= 0) {
-                    leyendaAccessQr.setText(leyendaisLocal);
-                } else {
-                    leyendaAccessQr.setText(leyendaisLocalReg);
-                    Button consulta = (Button) findViewById(R.id.cargarFotos);
-                    consulta.setText(leyendaBConsul);
+            try{
+                if (SessionC.equals(SessionF)) {
+                    ConstraintLayout backColorifBenef = (ConstraintLayout) findViewById(R.id.benefic);
+                    backColorifBenef.setBackgroundResource(R.drawable.esqu_shadow_button);
+                    SessionCurp.setText(SessionC);
+                    TextView leyendaAccess = (TextView) findViewById(R.id.Bne);
+                    TextView leyendaAccessQr = (TextView) findViewById(R.id.leyenda);
+                    leyendaAccess.setText(leyendaIsAccess);
+                    if (getIfNotCache.getCount() <= 0) {
+                        leyendaAccessQr.setText(leyendaisLocal);
+                    } else {
+                        leyendaAccessQr.setText(leyendaisLocalReg);
+                        Button consulta = (Button) findViewById(R.id.cargarFotos);
+                        consulta.setText(leyendaBConsul);
+                    }
                 }
+            }catch(Exception e){
+                Intent intent = new Intent(controlLayBeneficioNo.this, controlLayLogin.class);
+                startActivity(intent);
             }
+
         }
     }
 

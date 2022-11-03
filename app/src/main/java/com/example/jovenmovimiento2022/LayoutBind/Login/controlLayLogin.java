@@ -97,6 +97,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
 
     String TestingPass;
     int number;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         controlLayLogin.context = getApplicationContext();
@@ -371,8 +372,6 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         }
 
     }
-
-
 
     public class LOGIN extends AsyncTask<String, String, String> {
 
@@ -740,10 +739,5 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         pin.close();
         return PINCurp;
     }
-
-
-
-
-
 }
 
