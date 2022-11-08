@@ -43,24 +43,29 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
 
 
     private static final String URL = "http://187.216.191.87:8060/api/altaPersonBen";
+    private static final String URLgp = "http://187.216.191.87:8060/api/onLogonTesting/";
     private static final String Identity = "POST";
+    private static final String IdentityG = "GET";
 
-
+    //Retrive info
+    protected String isInSes = "is";
+    JSONObject json;
     DBOpenHelper dbOpenHelper;
     SQLiteDatabase database;
     private ProgressDialog dialogoUp;
     TextView nombre, Curp, Genero, fecha, Paises, Noest, ApellP, ApellM;
-    Button consulImage;
+    Button consulImage, sessionOFF;
     forConsultaCurp alertedisNull = new forConsultaCurp(this);
     String stateResponse, curpPerson, apellidoP, apellidoM, nombrePerson, generoPerson, fechaBirPerson, paisPerson, noEstPerson;
     DatosConsultaCurp person = new DatosConsultaCurp();
     methodsOn methods = new methodsOn();
     //Session User Simulated
-    protected String SessionC;
+    protected String SessionC, SessionOn, SessionCurpResponse;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.statusbeneficioon);
         dbOpenHelper = new DBOpenHelper(this);
-        onSetScreen();
+
 
         nombre = findViewById(R.id.Nombre);
         ApellP = findViewById(R.id.apellP);
@@ -71,7 +76,22 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
         Paises = findViewById(R.id.paisPerson);
         Noest = findViewById(R.id.NoEst);
         //
+
+        Bundle infoPerson = this.getIntent().getExtras();
+
+        SessionOn = infoPerson.getString("CurpSendSession");
+        SessionCurpResponse = infoPerson.getString("CurpSendSessionF");
         consulImage = findViewById(R.id.consulImages);
+        sessionOFF = findViewById(R.id.CerrarSession);
+        if(isInSes.equals(SessionOn)){
+            new getInfoPerson().execute();
+            consulImage.setVisibility(View.GONE);
+            sessionOFF.setEnabled(true);
+        }else{
+            onSetScreen();
+        }
+
+
     }
 
     @Override
@@ -157,7 +177,31 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
 
     @Override
     public void GET(String URL, String Identity) throws Exception {
-
+        List<NameValuePair> params = new ArrayList<>();
+        try{
+            params.add(new BasicNameValuePair("curpPerson",  SessionCurpResponse));
+            // 8 parametros
+            //String stateResponse, curpPerson, apellidoP, apellidoM, nombrePerson, generoPerson, fechaBirPerson, paisPerson, noEstPerson;
+            json  =  methods.Requested(URL, Identity, params);
+            curpPerson = json.getJSONObject("0").getString("curp_per");
+            apellidoP = json.getJSONObject("0").getString("paterno_a");
+            apellidoM = json.getJSONObject("0").getString("materno_a");
+            nombrePerson = json.getJSONObject("0").getString("nombres_per");
+            generoPerson = json.getJSONObject("0").getString("genero_per");
+            fechaBirPerson = json.getJSONObject("0").getString("fechana_per");
+            paisPerson = json.getJSONObject("0").getString("stat_nac");
+            noEstPerson = json.getJSONObject("0").getString("stat_nonac");
+            Log.d("Creando respuesta ...", json.toString());
+            Log.d("Creando respuesta ...", curpPerson);
+            Log.d("Creando respuesta ...", apellidoP);
+            Log.d("Creando respuesta ...", apellidoM);
+            Log.d("Creando respuesta ...", nombrePerson);
+            Log.d("Creando respuesta ...", generoPerson);
+            Log.d("Creando respuesta ...", fechaBirPerson);
+            Log.d("Creando respuesta ...", paisPerson);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -193,8 +237,8 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                             person.getSexo(),
                             person.getFechNac(),
                             person.getNacionalidad(),
-                            "1",
-                            "1",
+                            1,
+                            1,
                             person.getCveEntidadNac()
                     );
                     POST(URL, Identity);
@@ -219,8 +263,44 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
         }
     }
 
+    public class getInfoPerson extends AsyncTask<String, String, String>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialogoUp = new ProgressDialog(QreadLayHelper.this);
+            dialogoUp.setMessage("Cargando ...");
+            dialogoUp.setIndeterminate(false);
+            dialogoUp.setCancelable(false);
+            dialogoUp.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try{
+                GET(URLgp + SessionCurpResponse, IdentityG);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            dialogoUp.dismiss();
+            nombre.setText(nombrePerson);
+            ApellP.setText(apellidoP);
+            ApellM.setText(apellidoM);
+            Curp.setText(curpPerson);
+            Paises.setText(paisPerson);
+            Genero.setText(generoPerson);
+            fecha.setText(fechaBirPerson);
+            Noest.setText(noEstPerson);
+        }
+    }
+
     public void onSetScreen() {
-        setContentView(R.layout.statusbeneficioon);
         database = dbOpenHelper.getReadableDatabase();
         Cursor ifSomething = dbOpenHelper.retriveAllinfoPerson(database);
         Cursor ifSessionServer = dbOpenHelper.retriveNumberOfSession(database);
@@ -239,7 +319,6 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                 if(ifSessionServer.getCount() >= 1){
                     findViewById(R.id.CerrarSession).setEnabled(true);
                     TextView nombre, Curp, Genero, fecha, Paises, Noest, ApellP, ApellM;
-                    findViewById(R.id.CerrarSession).setEnabled(true);
                     SQLiteDatabase person = dbOpenHelper.getReadableDatabase();
                     Cursor Info = dbOpenHelper.retriveAllinfoPerson(person);
                     nombre = findViewById(R.id.Nombre);
@@ -264,7 +343,7 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                     ifSomething.close();
 
                 }
-                }
+        }
 
 
             findViewById(R.id.CerrarSession).setOnClickListener(new View.OnClickListener() {
@@ -299,8 +378,8 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                                 String genero,
                                 String fecha_nac,
                                 String nac,
-                                String benef,
-                                String exte,
+                                int benef,
+                                int exte,
                                 String nonac){
         SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
         dbOpenHelper.inFetchDataLocal(curp_per, apell_p, apell_m, nombres, genero, fecha_nac, nac, benef, exte, nonac, database);

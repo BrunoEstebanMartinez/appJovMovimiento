@@ -59,7 +59,6 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
     protected String leyendaIsNotAccess = "No eres beneficiario";
     protected String leyendaBConsul = "Consultar";
     protected String leyendaCurpQR = "Estas dado de alta. Solo podrás consultar tus datos";
-    protected String leyendaIsInServer = "Tu registro fue exitoso. Puedes desinstalar o cerrar la aplicación.";
     protected String leyendaisLocal = "Tu registro se guardará localmente. Captura el código QR impreso o digitalizado en tu documento";
     protected String leyendaisLocalReg = "Sesión local. Solo podrás consultar tus datos";
     protected boolean isConnected;
@@ -151,13 +150,14 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
             public void onClick(View view) {
                 SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
                 Cursor ifSomething = dbOpenHelper.retriveNumberOfSession(database);
-                if(ifSomething.getCount() <= 0){
+                if(ifSomething.getCount() <= 0) {
                     new POSTPINPERSON().execute();
                 }
                 ifSomething.close();
                 Intent intent= new Intent(controlLayBeneficioNo.this, QreadLayHelper.class);
                 Bundle Session = new Bundle();
-                Session.putString("Session", SessionC);
+                Session.putString(SessionC, "CurpSendSession");
+                Session.putString(SessionF, "CurpResponse");
                 intent.putExtras(Session);
                 startActivity(intent);
 

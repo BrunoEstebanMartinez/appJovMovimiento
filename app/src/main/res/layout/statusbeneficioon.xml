@@ -16,9 +16,7 @@
         android:background="@drawable/esqu_shadow_button_off"
         android:text="OFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/turn_off"
-        tools:srcCompat="@android:drawable/ic_lock_power_off" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <Button

@@ -20,7 +20,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -44,8 +43,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class controlLayLogin extends Activity implements navigate, methodServer {
 
@@ -63,13 +60,11 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
     //Requested
     private static final String Identity = "GET";
     private static final String IdentityAux = "POST";
-
     //
-
     protected static Context context;
     Button Login, login_to_principal;
     TextView pass;
-    String currentPIN, selfPin, selfCURP, currentCURP;
+    String currentPIN, selfPin;
     //
     forConsultaCurp alertedisNull = new forConsultaCurp(this);
     AlertDialog.Builder testingQRCurp;
@@ -81,8 +76,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
     DBOpenHelper dbOpenHelper;
     //Testings
     protected JSONObject json;
-    String SessionCurp, SessionPIN, SessionifExist;
-    String CURPLocal;
+    String SessionPIN, SessionifExist, testing, pointer;
     boolean isConnected;
     //Delayed task
     protected Handler IntStatusTask = new Handler();
@@ -90,16 +84,16 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
     String curp_per, compro_i, curp_i, acta_i, inden_re_i, inden_ad_i, benef_fu_i;
     String nombre_s, ApellP_s, ApellM_s, Curp_s, Genero_s, fecha_s, Paises_s, Noest_s;
     String curp_Session;
+    String CURPLocal;
     int passPIN;
     //Auxiliars responses
-    protected String sessionAccount = "non";
     protected String sessionAccountSuccess = "is";
-
+    protected String sessionAccount = "non";
     String TestingPass;
-    int number;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         controlLayLogin.context = getApplicationContext();
 
         dbOpenHelper = new DBOpenHelper(this);
@@ -119,8 +113,8 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
 
        if(ifSessionCount.getCount() <= 0){
             alertedisNull.alertisNull("Status: PIN", "Al iniciar tu registro la aplicación te asignará un PIN de inicio. Asegurate de guardarlo para cualquier aclaración", false, "Continuar", true);
-        }else if(ifSessionCount.getCount() >= 1){
-           IntStatusTask.postDelayed(taskActivityNetwork, 0);
+        }else{
+               IntStatusTask.postDelayed(taskActivityNetwork, 0);
        }
         ifSessionCount.close();
         //
@@ -145,7 +139,6 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
 
 
         while (images.moveToNext()) {
-
             curp_per = images.getString(images.getColumnIndexOrThrow(Estructure_personImages.CURP_PER));
             compro_i = images.getString(images.getColumnIndexOrThrow(Estructure_personImages.COMPROBANTE_ES));
             curp_i = images.getString(images.getColumnIndexOrThrow(Estructure_personImages.CURP_PH));
@@ -185,6 +178,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
     }
 
 
+
     Runnable taskActivityNetwork = new Runnable() {
         @Override
         public void run() {
@@ -200,9 +194,9 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 }else{
                     alertedisNull.alertisNull("Estatus: Sin conexión", "Conectate a una red para saber si eres beneficiario o no.", false, "Continuar", true);
                 }
-                        } else {
-
-                    new LOCALSTORAGE().execute();
+                onlyReceiveMessage.close();
+            } else {
+                        new LOCALSTORAGE().execute();
             }
             IntStatusTask.postDelayed(this, 20000);
         }
@@ -238,17 +232,13 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 @Override
                 public void run() {
                     Login.setEnabled(false);
-                    alertedisNull.alertisNull("Estatus", "Reinicia la aplicación. Código de inicio: " + selfPin + Curp_s, false, "Continuar", true);
+                    alertedisNull.alertisNull("Estatus", "Reinicia la aplicación. Código de inicio: " + selfPin, false, "Continuar", true);
                     IntStatusTask.removeCallbacks(taskActivityNetwork);
                 }
             }, 20000);
-
             pass = findViewById(R.id.PINED);
             selfPin = findPin(currentPIN);
-            selfCURP = findCurp(currentCURP);
-
             viewNavIntentisFinalLogon();
-
         }
     }
 
@@ -306,8 +296,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
 
         @Override
         protected void onCancelled() {
-            alertedisNull.alertisNull("Estatus: Datos", "Inicia tu pre-registro", false, "Continuar", true);
-
+            alertedisNull.alertisNull("Estatus: Datos", "Sigue navegando", false, "Continuar", true);
         }
         @Override
         protected void onPreExecute() {
@@ -322,8 +311,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
 
         @Override
         protected String doInBackground(String... strings) {
-            try {
-                Thread.sleep(1000);
+
                 SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
                 Cursor sessions = dbOpenHelper.retriveSessions(database);
                 Cursor images = dbOpenHelper.retriveAllinfoPersonImages(database);
@@ -333,10 +321,9 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 Info.moveToFirst();
 
                 if (sessions.getCount() <= 0 || Info.getCount() <= 0 || images.getCount() <= 0) {
-                    new LOCALSTORAGE().cancel(true);
-                    dialogoUp.dismiss();
-                }
-                else {
+                        new LOCALSTORAGE().cancel(true);
+                        dialogoUp.dismiss();
+                }else{
                     try {
                         onPOSTIfNotInfoPerson(URLIn, IdentityAux);
                     } catch (Exception e) {
@@ -347,6 +334,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                         onPostIfNotInfoPersonImages(URLIm, IdentityAux);
                     } catch (Exception e) {
                         e.printStackTrace();
+
                     }
 
                     try {
@@ -354,13 +342,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                     }catch(Exception e){
                         e.printStackTrace();
                     }
-
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-
             return null;
         }
 
@@ -405,15 +387,25 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 Cursor ifInfo = dbOpenHelper.retriveNumberOfSession(database);
                 ifInfo.moveToFirst();
 
+                if(SessionPIN.equals(sessionAccountSuccess)){
+                    if(ifInfo.getCount() <= 0){
+                        Intent intent = new Intent(controlLayLogin.this, QreadLayHelper.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("CurpSendSession", SessionPIN);
+                        bundle.putString("CurpSendSessionF", stateResponse);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+                }else{
+
                     Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
                     Bundle bundle = new Bundle();
-                    //Create a Key for local session
                     bundle.putString("CurpSendSession", SessionPIN);
                     bundle.putString("CurpSendSessionF", stateResponse);
                     intent.putExtras(bundle);
                     startActivity(intent);
+                }
                     IntStatusTask.removeCallbacks(taskActivityNetwork);
-
         }
     }
 
@@ -437,6 +429,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             return null;
         }
 
@@ -444,43 +437,35 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             dialogoUp.dismiss();
+
+            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
+
             SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
             Cursor getIfNotCache = dbOpenHelper.retriveNumberOfSession(database);
             getIfNotCache.moveToFirst();
-            if(sessionAccountSuccess.equals(SessionPIN)){
-                if(getIfNotCache.getCount() <= 0){
-                    Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
+
+            try{
+                if(SessionPIN.equals(sessionAccountSuccess)){
+                    Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("CurpSendSession", SessionPIN);
+                    bundle.putString("CurpResponse", stateResponse);
+                    intent.putExtras(bundle);
                     startActivity(intent);
-                    alertedisNull.alertisNull("Status: Datos", "0011: Ya eres beneficiario. Cierra o desinstala la app si hiciste tu registro", false, null, true);
-                           }
-            }else{
-                Intent intent = new Intent(controlLayLogin.this, QreadLayHelper.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("CurpSendSession", SessionPIN);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-            //
-            if(sessionAccount.equals(SessionPIN)){
+                }else{
+                    Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("CurpSendSession", SessionPIN);
+                    bundle.putString("CurpSendSessionCurp", SessionifExist);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            }catch(Exception e){
                 Intent intent = new Intent(controlLayLogin.this, controlLayLogin.class);
                 startActivity(intent);
-                alertedisNull.alertisNull("Algo salió mal", "Contacta al administrador", false, null, true);
-                          }else{
-                Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("CurpSendSession", SessionPIN);
-                bundle.putString("CurpSendSessionCurp", SessionifExist);
-                intent.putExtras(bundle);
-                startActivity(intent);
             }
-
-            Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("CurpSendSession", Curp_s);
-            bundle.putString("CurpSendSessionF", Curp_s);
-            intent.putExtras(bundle);
-            startActivity(intent);
-
             IntStatusTask.removeCallbacks(taskActivityNetwork);
         }
     }
@@ -536,6 +521,46 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                 bundle.putString("CurpSendSessionF", stateResponse);
                 intent.putExtras(bundle);
                 startActivity(intent);
+            }
+        }
+
+
+        public class stopProcessIf extends AsyncTask<String, String, String>{
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                IntStatusTask.removeCallbacks(taskActivityNetwork);
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                dialogoUp = new ProgressDialog(controlLayLogin.this);
+                dialogoUp.setMessage("Comprobando ...");
+                dialogoUp.setIndeterminate(false);
+                dialogoUp.setCancelable(false);
+                dialogoUp.show();
+            }
+
+            @Override
+            protected String doInBackground(String... strings) {
+                try {
+                    GETAuth(URL + Curp_s, Identity);
+                    if(testing.equals(sessionAccountSuccess)){
+                        new stopProcessIf().cancel(true);
+                        dialogoUp.dismiss();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                dialogoUp.dismiss();
             }
         }
 
@@ -617,7 +642,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         }
     }
 
-    //GET CURP
+
     public void POSTAuth(String URL, String Identity, int PIN) throws Exception {
 
         List<NameValuePair> params = new ArrayList<>();
@@ -640,18 +665,19 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         try {
             String CURPLocal = null;
             SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
-            Cursor ifCurp = dbOpenHelper.retriveNumberOfSession(database);
+            Cursor ifCurp = dbOpenHelper.retriveAllinfoPerson(database);
             while(ifCurp.moveToNext()){
-                CURPLocal = ifCurp.getString((ifCurp.getColumnIndexOrThrow(Estructure_Session.CURP_PH)));
+                CURPLocal = ifCurp.getString((ifCurp.getColumnIndexOrThrow(Estructure_person.CURP_PER)));
             }
             ifCurp.close();
             params.add(new BasicNameValuePair("curpPerson", CURPLocal));
             json = methods.Requested(URL, Identity, params);
-            //SessionifExist = json.getJSONObject("0").getString("pin_benef");
-            SessionPIN = json.getString("pin_benef");
+           // SessionifExist = json.getJSONObject("0").getString("pin_benef");
+            testing = json.getString("pin_benef");
+
             Log.d("Creando respuesta ...", json.toString());
-            //Log.d("Creando respuesta ...", SessionifExist);
-            Log.d("Creando respuesta ...", SessionPIN);
+//            Log.d("Creando respuesta ...", SessionifExist);
+            Log.d("Creando ...", testing);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -696,16 +722,6 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         }
         pin.close();
         return PINMatch;
-    }
-
-    public String findCurp(String PINCurp){
-        SQLiteDatabase findPinn = dbOpenHelper.getReadableDatabase();
-        Cursor pin = dbOpenHelper.retriveNumberOfSession(findPinn);
-        while(pin.moveToNext()){
-            PINCurp = pin.getString(pin.getColumnIndexOrThrow(Estructure_Session.CURP_PH));
-        }
-        pin.close();
-        return PINCurp;
     }
 }
 
