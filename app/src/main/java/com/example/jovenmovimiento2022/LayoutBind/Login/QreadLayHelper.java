@@ -83,10 +83,19 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
         SessionCurpResponse = infoPerson.getString("CurpSendSessionF");
         consulImage = findViewById(R.id.consulImages);
         sessionOFF = findViewById(R.id.CerrarSession);
+
         if(isInSes.equals(SessionOn)){
             new getInfoPerson().execute();
             consulImage.setVisibility(View.GONE);
+            Button sessionOFF = findViewById(R.id.CerrarSession);
             sessionOFF.setEnabled(true);
+            sessionOFF.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(QreadLayHelper.this, controlLayLogin.class);
+                    startActivity(intent);
+                }
+            });
         }else{
             onSetScreen();
         }
@@ -237,8 +246,8 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                             person.getSexo(),
                             person.getFechNac(),
                             person.getNacionalidad(),
-                            1,
-                            1,
+                            "1",
+                            "1",
                             person.getCveEntidadNac()
                     );
                     POST(URL, Identity);
@@ -378,8 +387,8 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
                                 String genero,
                                 String fecha_nac,
                                 String nac,
-                                int benef,
-                                int exte,
+                                String benef,
+                                String exte,
                                 String nonac){
         SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
         dbOpenHelper.inFetchDataLocal(curp_per, apell_p, apell_m, nombres, genero, fecha_nac, nac, benef, exte, nonac, database);

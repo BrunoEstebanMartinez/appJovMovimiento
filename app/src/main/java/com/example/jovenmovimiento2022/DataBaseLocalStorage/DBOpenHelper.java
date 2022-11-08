@@ -91,8 +91,8 @@ public class DBOpenHelper extends SQLiteOpenHelper{
                                  String genero,
                                  String fecha_nac,
                                  String nac,
-                                 int benef,
-                                 int exte,
+                                 String benef,
+                                 String exte,
                                  String nonac,
                                  SQLiteDatabase database){
         ContentValues contentValues = new ContentValues();
