@@ -50,8 +50,8 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
     protected TextView SessionCurp;
     protected TextView SessionLeyen;
 
-    protected String URL = "http://187.216.191.87:8060/api/altaPersonSession";
-    protected String URLrg = "http://187.216.191.87:8060/api/altaRegPerson";
+    protected String URL = "http://187.216.191.87:8010/api/pinRegister";
+    //protected String URLrg = "http://187.216.191.87:8010/api/altaRegPerson";
     protected String Identity = "POST";
     protected String valuated = "non";
     protected String valueIsSucces = "is";
@@ -188,11 +188,6 @@ public class controlLayBeneficioNo extends Activity implements navigate, methodS
                 POST(URL, Identity);
 
             } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try{
-                POSTREGBENEF(URLrg, Identity);
-            }catch(Exception e){
                 e.printStackTrace();
             }
             return null;

@@ -43,7 +43,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/CerrarSession" />
 
-
     <TextView
         android:id="@+id/CURP"
         android:layout_width="0dp"

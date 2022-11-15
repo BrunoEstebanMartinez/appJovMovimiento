@@ -42,8 +42,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 public class QreadLayHelper extends Activity implements methodServer, navigate {
 
 
-    private static final String URL = "http://187.216.191.87:8060/api/altaPersonBen";
-    private static final String URLgp = "http://187.216.191.87:8060/api/onLogonTesting/";
+    private static final String URL = "http://187.216.191.87:8010/api/newBenefPerson";
+    private static final String URLgp = "http://187.216.191.87:8010/api/onLogonTesting/";
     private static final String Identity = "POST";
     private static final String IdentityG = "GET";
 
@@ -113,14 +113,14 @@ public class QreadLayHelper extends Activity implements methodServer, navigate {
             else{
                 stateResponse = result.getContents();
                 String [] args = stateResponse.split("\\|");
-                 curpPerson = args[0];
-                 apellidoP = args[2];
-                 apellidoM = args[3];
+                 curpPerson     = args[0];
+                 apellidoP      = args[2];
+                 apellidoM      = args[3];
                  nombrePerson   = args[4];
-                 generoPerson  = args[5];
-                 fechaBirPerson     = args[6];
-                 paisPerson    = args[7];
-                 noEstPerson = args[8];
+                 generoPerson   = args[5];
+                 fechaBirPerson = args[6];
+                 paisPerson     = args[7];
+                 noEstPerson    = args[8];
 
                 nombre.setText(nombrePerson);
                 ApellP.setText(apellidoP);

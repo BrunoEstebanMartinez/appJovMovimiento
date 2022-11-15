@@ -52,7 +52,7 @@ import androidx.core.content.ContextCompat;
 public class benefiInfo extends Activity implements navigate, methodServer{
 
     //URL process API
-    private static final String URL = "http://187.216.191.87:8060/api/altaPersonImage";
+    private static final String URL = "http://187.216.191.87:8010/api/newPersonImages";
     private static final String Identity = "POST";
     //Context App and CODES permission camera
     private static Context context;

@@ -47,16 +47,15 @@ import java.util.List;
 public class controlLayLogin extends Activity implements navigate, methodServer {
 
 
-    //Search person for info in table -> RESPONSE THE PIN
-    private static final String URL = "http://187.216.191.87:8060/api/onLogonTestWithPIN/";
+    private static final String URL = "http://187.216.191.87:8010/api/initialAPP/";
     //Get session person -> RESPONSE THE CURP
-    private static final String URLSg = "http://187.216.191.87:8060/api/onLogonTestWithCURPRPIN/";
+    private static final String URLSg = "http://187.216.191.87:8010/api/login/";
     //Post Info person
-    private static final String URLIn = "http://187.216.191.87:8060/api/altaPersonBen";
+    private static final String URLIn = "http://187.216.191.87:8010/api/newBenefPerson";
     //Post info person images
-    private static final String URLIm = "http://187.216.191.87:8060/api/altaPersonImage";
+    private static final String URLIm = "http://187.216.191.87:8010/api/newPersonImages";
     //Post info person session
-    private static final String URLSp = "http://187.216.191.87:8060/api/altaPersonSession";
+    private static final String URLSp = "http://187.216.191.87:8010/api/pinRegister";
     //Requested
     private static final String Identity = "GET";
     private static final String IdentityAux = "POST";
@@ -225,8 +224,7 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
             Indications.show();
             viewNavintent();
         } else {
-            //alertedisNull.alertisNull("Indicaciones", "Asegurate de tener TODOS tus documentos e información a la mano para evitar que tus datos se pierdan. ", false, "Continuar", true);
-            //Revision -> task duplicate -> similar logic handler
+             //Revision -> task duplicate -> similar logic handler
             Handler timeForLogin = new Handler();
             timeForLogin.postDelayed(new Runnable() {
                 @Override
@@ -350,7 +348,6 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
         protected void onPostExecute(String s) {
             dialogoUp.dismiss();
             IntStatusTask.removeCallbacks(taskActivityNetwork);
-            //alertedisNull.alertisNull("Status: Datos", "Tus datos fueron guardados. Puedes cerrar la aplicación", false, "Continuar", true);
         }
 
     }
@@ -397,7 +394,6 @@ public class controlLayLogin extends Activity implements navigate, methodServer 
                         startActivity(intent);
                     }
                 }else{
-
                     Intent intent = new Intent(controlLayLogin.this, controlLayBeneficioNo.class);
                     Bundle bundle = new Bundle();
                     bundle.putString("CurpSendSession", SessionPIN);
